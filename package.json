@@ -1,0 +1,26 @@
+{
+    "author": "alowva",
+    "dependencies": {},
+    "keywords": [
+        "pebble-app"
+    ],
+    "name": "bold-hour-2",
+    "pebble": {
+        "displayName": "Bold Hour 2",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "moddable",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "emery"
+        ],
+        "uuid": "9d2e2fb2-4109-45c6-b852-554178343000",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "0.1.0"
+}
