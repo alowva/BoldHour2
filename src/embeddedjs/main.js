@@ -15,47 +15,63 @@ const SEGMENTS = {
   6: 0b1011111,
   7: 0b1110000,
   8: 0b1111111,
-  9: 0b1111011
+  9: 0b1111011,
+  10: 0b0000110,
+  11: 0b0110110,
+  12: 0b0000110,
 };
 
+function drawHour(digit,x, y, height ,width ,corner) {
+  if (digit < 10) {
+  drawHourNumber(digit, x, y, height, width, 6);
+  } else if (digit == 10) {
+    drawHourNumber(10, x, y, height, width*0.75, 6);
+    drawHourNumber(0, width / 4 + 4, y, height, width*0.75 - 4, 6);
+  } else if (digit == 11) {
+    drawHourNumber(11, x, y, height, width, 6);
+  } else if (digit == 12) {
+    drawHourNumber(10, x, y, height, width*0.75 , 6);
+    drawHourNumber(2, width / 4 + 4, y, height, width*0.75 - 4, 6);
+  }
+}
+
 //draw hour number
-function drawHourNumber(digit, height, width, corner) {
+function drawHourNumber(digit, x , y, height, width, corner) {
   const bitmask = SEGMENTS[digit];
   
   // If the digit isn't 0-9, bail out
-  if (bitmask === undefined) return;
+  //if (bitmask === undefined) return;
   
   //drawRoundRect(x, y, width, height, color, radius, corners);
   
   // A: Top
   if (bitmask & 0b1000000) {
-     render.drawRoundRect(0, 0, width, height/6, white, corner); //full width
-     render.drawRoundRect(width - width/3 + 1, 0, width/3, height/3.5, white, corner); //right edge
-     render.drawRoundRect(0, 0, width/3, height/3.5, white, corner); //left edge
+     render.drawRoundRect(x, y, width, height/6, white, corner); //full width
+     render.drawRoundRect(x + width - width/3 + 1, y, width/3, height/3.5, white, corner); //right edge
+     render.drawRoundRect(x, y, width/3, y + height/3.5, white, corner); //left edge
   }; 
   
   // B: Top Right
-  if (bitmask & 0b0100000)  render.drawRoundRect(width - width/3 + 1, 0, width/3, height/1.8, white, corner);   //topright
+  if (bitmask & 0b0100000)  render.drawRoundRect(x + width - width/3 + 1, y, width/3, height/2, white, corner, 0b0011);   //topright
   
   // C: Bottom Right
-  if (bitmask & 0b0010000) render.drawRoundRect(width - width/3 + 1, height/2.2, width/3, height/2, white, corner);   //bottomright
+  if (bitmask & 0b0010000) render.drawRoundRect(x + width - width/3 + 1, y + height/2, width/3, height/2, white, corner, 0b1100);   //bottomright
   
   // D: Bottom
   if (bitmask & 0b0001000) {
-    render.drawRoundRect(0, height - height/6 , width, height/6, white, corner); //full width
-    render.drawRoundRect(width - width/3 + 1, height-height/3.5, width/3, height/3.5, white, corner); //right edge  
-    render.drawRoundRect(0, height - height/3.5, width/3, height/3.5, white, corner); //left edge
+    render.drawRoundRect(x, height - height/6 , y + width, height/6, white, corner); //full width
+    render.drawRoundRect(x + width - width/3 + 1, y + height-height/3.5, width/3, height/3.5, white, corner); //right edge  
+    render.drawRoundRect(x, height - height/3.5, y + width/3, height/3.5, white, corner); //left edge
   }
   
   // E: Bottom Left
-  if (bitmask & 0b0000100) render.drawRoundRect(0, height/2.2, width/3, height/2, white, corner);     //bottomleft
+  if (bitmask & 0b0000100) render.drawRoundRect(x, y + height/2, width/3, height/2, white, corner, 0b1100);     //bottomleft
   
   // F: Top Left
-  if (bitmask & 0b0000010) render.drawRoundRect(0, 0, width/3, height/1.8, white, corner);     //topleft
+  if (bitmask & 0b0000010) render.drawRoundRect(x, y, width/3, height/2 , white, corner, 0b0011);     //topleft
   
   // G: Middle
-  if (bitmask & 0b0000001) render.drawRoundRect(0, (height-height/7)/2, width, height/7, white, corner);   //middle
-
+  if (bitmask & 0b0000001) render.drawRoundRect(x, y + (height-height/7)/2, width, height/7, white, corner);   //middle
 }
 
 // Load a custom font from BMF resources
@@ -78,7 +94,7 @@ const timeY = render.height / 6.5;
 
 function draw(event) {
   
-    const now = event.date;2
+    const now = event.date;
     
     render.begin();
     
@@ -86,17 +102,27 @@ function draw(event) {
     render.fillRectangle(black, 0, 0, render.width, render.height);
   
     // Format time as HH:MM
-    const hours = String(now.getHours());
+    const hours = now.getHours();
     const minutes = String(now.getMinutes()).padStart(2, "0");
-
+  
+    const hours12Int = hours % 12 || 12;
+  
+  
+    //offset for minutes when hour 10 - 12
+    let minuteoffset = 0;
+  
+    //if ( hours === 11 || hours === 12 ){
+    //  minuteoffset = render.width/8;
+    //}
+    
     // Draw time centered
     let width = render.getTextWidth(minutes, timeFont);
 
     //draw bold hours
-    drawHourNumber(2, render.height, render.width, 14);
-  
+    drawHour(hours12Int, 0, 0, render.height, render.width, 6);
+
     //draw minutes
-    render.drawText(minutes, timeFont, red, (render.width - width) / 2, timeY);
+    render.drawText(minutes, timeFont, red, (render.width - width) / 2 + minuteoffset, timeY);
   
     render.end();
 }
