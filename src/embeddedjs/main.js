@@ -2,7 +2,15 @@ import Poco from "commodetto/Poco";
 import parseBMF from "commodetto/parseBMF";
 import parseRLE from "commodetto/parseRLE";
 
+
 const render = new Poco(screen);
+
+// Colors
+const black = render.makeColor(0, 0, 0);
+const white = render.makeColor(255, 255, 255);
+
+// setup fonts
+const timeFont = getFont("Asakim_Bold", 60);
 
 //define bitmap for "7 segment display"
 const SEGMENTS = {
@@ -81,49 +89,52 @@ function getFont(name, size) {
     return font;
 }
 
-// Use the same Jersey font as the C tutorial — a distinctive display font
-const timeFont = getFont("Asakim_Bold", 60);
 
-// Colors
-const black = render.makeColor(0, 0, 0);
-const white = render.makeColor(255, 255, 255);
-const red = render.makeColor(255, 0, 0);
-
-// Precompute layout positions
-const timeY = render.height / 6.5;
-
+//main "loop"
 function draw(event) {
   
+  
+    //get time and date
     const now = event.date;
+  
+    // get hours int
+    const hours = now.getHours();
+  
+    //I dont like 24 h at the moment so fix that!
+    const hours12Int = hours % 12 || 12;
+  
+    // get minutes string 2 Sig figs
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+  
+  
+    // LAYOUT
+  
+    // Precompute layout positions
+    const timeY = render.height / 6.5;
+  
+    // calculate minute centring
+    let width = render.getTextWidth(minutes, timeFont);
     
+    // offset for minutes when hour 10 or 12
+    let minuteoffset = 0;
+    if ( hours12Int === 10 || hours12Int === 12 ){
+      minuteoffset = render.width/8;
+    }
+  
+  
+    //start drawing
     render.begin();
-    
+
     //fill background
     render.fillRectangle(black, 0, 0, render.width, render.height);
   
-    // Format time as HH:MM
-    const hours = now.getHours();
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-  
-    const hours12Int = hours % 12 || 12;
-  
-  
-    //offset for minutes when hour 10 - 12
-    let minuteoffset = 0;
-  
-    //if ( hours === 11 || hours === 12 ){
-    //  minuteoffset = render.width/8;
-    //}
-    
-    // Draw time centered
-    let width = render.getTextWidth(minutes, timeFont);
-
     //draw bold hours
     drawHour(hours12Int, 0, 0, render.height, render.width, 6);
-
+    
     //draw minutes
-    render.drawText(minutes, timeFont, red, (render.width - width) / 2 + minuteoffset, timeY);
+    render.drawText(minutes, timeFont, white, (render.width - width) / 2 + minuteoffset, timeY);
   
+    //end drawing
     render.end();
 }
 

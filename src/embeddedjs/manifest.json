@@ -7,21 +7,9 @@
 	},
 	"resources": {
 		"*-alpha": [
-			{
-				"source": "./assets/Jersey10-Regular",
-				"size": 56,
-				"monochrome": true,
-				"blocks": ["Basic Latin"]
-			},
       {
 				"source": "./assets/Asakim_Bold",
 				"size": 60,
-				"monochrome": true,
-				"blocks": ["Basic Latin"]
-			},
-			{
-				"source": "./assets/Jersey10-Regular",
-				"size": 24,
 				"monochrome": true,
 				"blocks": ["Basic Latin"]
 			}
